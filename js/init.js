@@ -172,16 +172,40 @@ function getMouseOverCallback(fn) {
 
         let rectangle = target.getBoundingClientRect();
         let recW = rectangle.width;
+        let recY = rectangle.bottom;
+        let recR = rectangle.right;
+        let center = recR - recW;
         let recH = rectangle.height;
+        let screenWidth = window.innerWidth;
+        let screenHeight = window.innerHeight;
+        
+        console.log(recY);
 
-        //need to fix this, doesnt work right
-        let x = recW + (rectangle.width - e.pageX);
-        if (x > 1575)
+        //let x = e.pageX;
+        let x = center;
+        let scrollBar = 20;
+        let breathingRoom = 15;
+        if (x + 300 > screenWidth)
         {
-            x = 1575;
+            let valueX = x + 300;
+            let difference = (valueX - screenWidth) + scrollBar + breathingRoom;
+            x = x - difference;
+            
         }
+        
+
         let y = e.pageY;
-        fn(e.pageX-50,e.pageY+1,target.dataset.chapter,target.dataset.section);
+        if(y < recY - 3)
+        {
+            y = e.pageY + recH;   
+        }
+        if (y + 250 > screenHeight)
+        {
+            let valueY = y + 250;
+            console.log(valueY);
+        }
+
+        fn(x+1,y+1,target.dataset.chapter,target.dataset.section);
 
     });
 }
