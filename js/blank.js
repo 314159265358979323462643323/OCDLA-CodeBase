@@ -6,15 +6,14 @@ console.log(left);
 
 
 
-function getRules() {
+function getStyleSheet(name) {
 
-    var stylesheet = document.styleSheets[3];
-    stylesheet.cssRules[2].style.left = 135;
     for (var i = 0; i<document.styleSheets.length; i++) {
-     var ss = document.styleSheets[i];
-     var r = ss.cssRules ? ss.cssRules : ss.rules;
-     console.log(r);
+        let href = document.styleSheets[i].ownerNode.getAttribute("href");
+        if(href.indexOf(name) !== -1)
+        {
+            console.log("SUCCESS!!");
+        }
     }
-    
     
 }

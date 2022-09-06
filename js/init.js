@@ -12,6 +12,17 @@ window.OrsChapter = OrsChapter;
 
 let inlineModalFired = false;
 
+function findStyleSheet(name){
+    for (var i = 0; i<document.styleSheets.length; i++) {
+        let href = document.styleSheets[i].ownerNode.getAttribute("href");
+        if(href.indexOf(name) !== -1)
+        {
+            console.log("SUCCESS!!");
+            return document.styleSheets[i];
+        }
+    }
+}
+    
 
 // Convert the document to be ORS-ready.
 domReady(function() {
@@ -163,13 +174,18 @@ function ors(chapter, section) {
     });
 }
 
+function moveArrow(position)
+{
+    const stylesheet = findStyleSheet("modal-inline");
+    stylesheet.cssRules[2].style.left = position + "px";
+}
+
 function getMouseOverCallback(fn) {
 
 
     return (function(e) {
+        
         let target = e.target;
-        //console.log(e);
-
         let rectangle = target.getBoundingClientRect();
         let recW = rectangle.width;
         let recY = rectangle.bottom;
@@ -178,34 +194,42 @@ function getMouseOverCallback(fn) {
         let recH = rectangle.height;
         let screenWidth = window.innerWidth;
         let screenHeight = window.innerHeight;
-        
-        console.log(recY);
-
-        //let x = e.pageX;
-        let x = center;
+        let modalWidth = 300;
+        let modalHeight = 250;
         let scrollBar = 20;
         let breathingRoom = 15;
-        if (x + 300 > screenWidth)
+        let finalX = center;
+        let finalY = e.pageY;
+
+        moveArrow(35);
+        //comment
+        if (center + modalWidth > screenWidth)
         {
-            let valueX = x + 300;
+            let valueX = center + modalWidth;
             let difference = (valueX - screenWidth) + scrollBar + breathingRoom;
-            x = x - difference;
+            finalX = center - difference;
             
+            
+            moveArrow(215);
         }
         
 
-        let y = e.pageY;
-        if(y < recY - 3)
+        
+        //dont let the top of the modal overlap the link
+        if(e.pageY < recY - 3)
         {
-            y = e.pageY + recH;   
+            finalY = e.pageY + recH;   
         }
-        if (y + 250 > screenHeight)
+        //dont let the bottom of the modal go off the screen/window
+        if (false && (e.pageY + modalHeight > screenHeight))
         {
-            let valueY = y + 250;
+            let valueY = y + modalHeight;
+            y = valueY + finalHeight;
             console.log(valueY);
         }
-
-        fn(x+1,y+1,target.dataset.chapter,target.dataset.section);
+        finalX = finalX+1;
+        finalY = finalY+1;
+        fn(finalX,finalY,target.dataset.chapter,target.dataset.section);
 
     });
 }
