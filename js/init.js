@@ -56,6 +56,7 @@ domReady(function() {
 
     
     let mouseOutCb = getMouseLeaveCallback(modalTarget, function() { window.modalJr.hide(); });
+    getMouseOverCallback = getMouseOverCallback.bind(modalJr);
     let mouseOverCb = getMouseOverCallback(function(x,y,chapter,section){
         console.log("X coord is ",x);
         console.log("Y coord is ",y);
@@ -72,7 +73,7 @@ domReady(function() {
 
 
         window.modalJr.show(x,y);
-
+        //modalJr.flipArrow("bottom");
 
         let chapterDoc = OrsChapter.getCached(chapter) || new OrsChapter(chapter); 
         
@@ -180,11 +181,12 @@ function moveArrow(position)
     stylesheet.cssRules[2].style.left = position + "px";
 }
 
+
 function getMouseOverCallback(fn) {
 
-
+    console.log(this);
     return (function(e) {
-        
+        console.log(this);
         let target = e.target;
         let rectangle = target.getBoundingClientRect();
         let recW = rectangle.width;
@@ -202,6 +204,7 @@ function getMouseOverCallback(fn) {
         let finalY = e.pageY;
 
         moveArrow(35);
+        this.flipArrow("top");
         //comment
         if (center + modalWidth > screenWidth)
         {
@@ -221,17 +224,18 @@ function getMouseOverCallback(fn) {
             finalY = e.pageY + recH;   
         }
         //dont let the bottom of the modal go off the screen/window
-        if (false && (e.pageY + modalHeight > screenHeight))
+        if (e.pageY + modalHeight > screenHeight)
         {
-            let valueY = y + modalHeight;
-            y = valueY + finalHeight;
-            console.log(valueY);
+            this.flipArrow("bottom");
+
+            let finalHeight = modalHeight + recH + breathingRoom;
+            finalY = e.pageY - finalHeight;
         }
         finalX = finalX+1;
         finalY = finalY+1;
         fn(finalX,finalY,target.dataset.chapter,target.dataset.section);
 
-    });
+    }).bind(this);
 }
 
 
